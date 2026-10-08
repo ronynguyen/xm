@@ -1,0 +1,297 @@
+Audit Log demonstration script
+
+Recommended duration: 8–10 minutes
+Primary objective: Demonstrate audit-log discovery, filtering, validation, pagination, tenant isolation, and the navigation/layout regression fix.
+
+Pre-demo preparation
+
+Use an account with  CAN_VIEW_AUDIT_LOG  and ensure the selected tenant/business unit has records such as:
+
+┌──────────────────────┬─────────────┬───────────────────────┬─────────┬──────────────────────────┐
+│ User                 │ Action Type │ Action/Activity       │ Result  │ Page                     │
+├──────────────────────┼─────────────┼───────────────────────┼─────────┼──────────────────────────┤
+│ admin@example.com    │ Create      │ Create Consent        │ Success │ Consent Management Setup │
+├──────────────────────┼─────────────┼───────────────────────┼─────────┼──────────────────────────┤
+│ admin@example.com    │ Update      │ Update Consent        │ Success │ Consent Management Setup │
+├──────────────────────┼─────────────┼───────────────────────┼─────────┼──────────────────────────┤
+│ operator@example.com │ Delete      │ Delete Consent        │ Fail    │ Consent Management Setup │
+├──────────────────────┼─────────────┼───────────────────────┼─────────┼──────────────────────────┤
+│ admin@example.com    │ Login       │ User Login            │ Success │ Login                    │
+├──────────────────────┼─────────────┼───────────────────────┼─────────┼──────────────────────────┤
+│ admin@example.com    │ Export      │ Export Consent Report │ Success │ Consent Management       │
+└──────────────────────┴─────────────┴───────────────────────┴─────────┴──────────────────────────┘
+
+Prepare enough records to demonstrate page sizes  10 ,  20 ,  50 , and  100 . Audit results are scoped to the currently selected tenant and business unit.
+
+────────────────────
+
+Presenter talk track
+
+1. Introduce the page
+
+Action
+
+1. Log in to RGS Admin Portal.
+2. Select the required tenant and business unit.
+3. Open Audit Log from the sidebar.
+
+Say
+
+The Audit Log provides a tenant- and business-unit-scoped history of actions performed in the portal. Records are displayed newest first and include the user, action, result, source page, and audit entry ID.
+
+Verify
+
+• Breadcrumb displays Home > Audit Log.
+• Search form spans the available content width.
+• Result table shows:
+• Date Time
+• User ID (Email)
+• Audit Entry ID
+• Action Type
+• Action/Activity
+• Action Result
+• Page
+
+────────────────────
+
+3. Search by user email
+
+Action
+
+1. Enter  admin@example.com  in User ID (Email).
+2. Click Search.
+
+Say
+
+Audit records can be filtered by the user who performed the action.
+
+Expected result
+
+• Only records matching  admin@example.com  appear.
+• Total record count is updated.
+• Results remain sorted by newest date first.
+• Pagination returns to page 1.
+
+────────────────────
+
+4. Search by action type
+
+Action
+
+1. Click Clear.
+2. Select Create from Action Type.
+3. Click Search.
+
+Say
+
+Standard action categories include Login, Logout, Create, Update, Read, Delete, Export, Download, and Status Change.
+
+Expected result
+
+• Only Create actions are shown.
+• Successful results have a green Success tag.
+• Failed results, if present, have a red Fail tag.
+
+────────────────────
+
+5. Search by activity
+
+Action
+
+1. Click Clear.
+2. Enter  Create Consent  in Action/Activity.
+3. Press Enter instead of clicking Search.
+
+Say
+
+Users can also search by the business activity name. Text searches can be submitted directly with Enter.
+
+Expected result
+
+• Matching Create Consent records appear.
+• Each result includes its unique Audit Entry ID and originating page.
+
+────────────────────
+
+6. Combined filtering
+
+Action
+
+Apply all of the following:
+
+• User ID:  admin@example.com 
+• Action Type:  Create 
+• Action/Activity:  Create Consent 
+• Date From / Date To: a range containing the prepared record
+
+Click Search.
+
+Say
+
+Filters can be combined to narrow the investigation to a specific user, action, activity, and date range.
+
+Expected result
+
+• Every displayed record satisfies all selected criteria.
+• Date/time is displayed as  DD/MM/YYYY HH:mm:ss .
+• The date filter includes the entire From and To dates.
+
+────────────────────
+
+7. Demonstrate validation
+
+No search parameters
+
+Action
+
+1. Click Clear.
+2. Click Search without entering anything.
+
+Expected message
+
+Please provide at least one search parameter.
+
+Incomplete date range
+
+Action
+
+1. Select only Date From.
+2. Click Search.
+
+Expected message
+
+Both 'Date From' and 'Date To' are required when using date range.
+
+Invalid date order
+
+Action
+
+1. Select a Date From later than Date To.
+2. Click Search.
+
+Expected message
+
+'Date From' cannot be later than 'Date To'.
+
+Say
+
+Client-side validation prevents broad accidental searches and invalid date-range requests.
+
+────────────────────
+
+8. No-result behavior
+
+Action
+
+1. Click Clear.
+2. Enter a nonexistent user such as  unknown.demo@example.com .
+3. Click Search.
+
+Expected result
+
+• Table displays:
+
+No activities found matching your search criteria.
+
+• Page remains usable.
+• No stale results from the previous search remain visible.
+
+────────────────────
+
+9. Clear and reset
+
+Action
+
+1. Click Clear after applying several filters.
+
+Expected result
+
+• All input fields reset.
+• Validation messages disappear.
+• Current page resets to page 1.
+• Default page size returns to the current configured state.
+• Initial audit records are requested again.
+
+────────────────────
+
+10. Pagination
+
+Action
+
+1. Search for a criterion returning more than ten records.
+2. Navigate to page 2.
+3. Change page size from  10  to  20 , then optionally  50 .
+
+Say
+
+Pagination supports 10, 20, 50, or 100 records per page while preserving the active filters.
+
+Expected result
+
+• Summary displays, for example:
+
+Showing 11 – 20 of 37 records
+
+• Filters remain active while paging.
+• Changing page size updates the result range correctly.
+
+────────────────────
+
+11. Tenant/business-unit isolation
+
+Action
+
+1. Note the current Audit Log results.
+2. Change the selected tenant or business unit.
+3. Return to Audit Log and repeat the same search.
+
+Say
+
+Audit records are always restricted to the active tenant and business-unit context. Users cannot retrieve audit events belonging to another context through this page.
+
+Expected result
+
+• Results reflect only the newly selected context.
+• Records from the previous tenant/business unit do not appear.
+
+────────────────────
+
+Compact acceptance scenario matrix
+
+┌───────┬──────────────────────────────────────────┬─────────────────────────────────────────────────┐
+│ ID    │ Scenario                                 │ Expected outcome                                │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-01 │ Open Audit Log                           │ Page and initial records load successfully      │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-02 │ Engagement Hub → Audit Log               │ Full-width layout restored without F5           │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-03 │ Repeat navigation with collapsed sidebar │ Layout and menu remain stable                   │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-04 │ Search by user email                     │ Only matching user records appear               │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-05 │ Search by action type                    │ Only selected action records appear             │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-06 │ Search by activity using Enter           │ Search executes and returns matching activities │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-07 │ Combined filters                         │ Results satisfy every supplied filter           │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-08 │ Empty search                             │ Required-search-parameter message appears       │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-09 │ Only one date supplied                   │ Both-dates-required message appears             │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-10 │ From date after To date                  │ Invalid-date-order message appears              │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-11 │ Search with no matches                   │ Empty-state message appears                     │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-12 │ Clear filters                            │ Form, error, results, and page reset            │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-13 │ Change page/page size                    │ Correct records and range summary appear        │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-14 │ Switch tenant/business unit              │ Results remain context-isolated                 │
+├───────┼──────────────────────────────────────────┼─────────────────────────────────────────────────┤
+│ AL-15 │ Success and failed records               │ Correct green/red result tags appear            │
+└───────┴──────────────────────────────────────────┴─────────────────────────────────────────────────┘
+
+Closing statement
+
+The Audit Log now supports controlled, context-scoped investigation using user, action, activity, and date filters. It handles invalid searches clearly, supports large result sets, and retains the correct full-width layout after navigation without requiring a browser refresh.
